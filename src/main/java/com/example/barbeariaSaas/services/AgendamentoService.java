@@ -29,6 +29,13 @@ public class AgendamentoService {
         return agendamentoRepository.findByBarbeariaId(barbeariaId);
     }
 
+    public void concluirAgendamento(Long id) {
+        if (!agendamentoRepository.existsById(id)) {
+            throw new RuntimeException("Agendamento não encontrado");
+        }
+        agendamentoRepository.deleteById(id);
+    }
+
     public Agendamento realizarAgendamento(Agendamento agendamento) {
         // 1. Lidar com o Cliente (Salva se for novo, ou usa o existente)
         Cliente cliente = agendamento.getCliente();

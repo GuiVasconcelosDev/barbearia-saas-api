@@ -22,6 +22,8 @@ public class Barbearia {
     @Column(length = 20)
     private String telefone;
 
+    private String chavePix;
+
     @Column(columnDefinition = "TEXT")
     private String endereco;
 
