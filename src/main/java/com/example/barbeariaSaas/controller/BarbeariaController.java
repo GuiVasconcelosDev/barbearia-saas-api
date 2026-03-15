@@ -26,7 +26,8 @@ public class BarbeariaController {
     @Autowired
     private BarbeariaService service;
 
-    @Autowired BarbeariaRepository repository;
+    @Autowired 
+    BarbeariaRepository repository;
 
     @GetMapping
     public List<Barbearia> listarTodas() {
@@ -35,6 +36,8 @@ public class BarbeariaController {
 
     @PostMapping
     public Barbearia adicionar(@RequestBody Barbearia barbearia) {
+        // Garante que toda nova barbearia já entra com o sistema liberado!
+        barbearia.setAtivo(true); 
         return service.criar(barbearia);
     }
     
@@ -46,7 +49,15 @@ public class BarbeariaController {
         );
 
         if (barbeariaEncontrada.isPresent()) {
-            return ResponseEntity.ok(barbeariaEncontrada.get()); // Login com sucesso
+            Barbearia barbearia = barbeariaEncontrada.get();
+            
+            // --- TRAVA DE SEGURANÇA 1: BLOQUEIA O PAINEL ---
+            if (barbearia.getAtivo() != null && !barbearia.getAtivo()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Assinatura inativa. Entre em contato com o suporte.");
+            }
+            // -----------------------------------------------
+
+            return ResponseEntity.ok(barbearia); // Login com sucesso
         } else {
             // E-mail ou senha errados
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha inválidos.");
@@ -54,11 +65,19 @@ public class BarbeariaController {
     }
 
     @GetMapping("/slug/{slug}")
-
     public ResponseEntity<?> buscarPorSlug(@PathVariable String slug) {
-        Optional<Barbearia> barbearia = repository.findBySlug(slug);
-        if (barbearia.isPresent()) {
-            return ResponseEntity.ok(barbearia.get());
+        Optional<Barbearia> barbeariaEncontrada = repository.findBySlug(slug);
+        
+        if (barbeariaEncontrada.isPresent()) {
+            Barbearia barbearia = barbeariaEncontrada.get();
+            
+            // --- TRAVA DE SEGURANÇA 2: BLOQUEIA A TELA DO CLIENTE ---
+            if (barbearia.getAtivo() != null && !barbearia.getAtivo()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Página temporariamente indisponível.");
+            }
+            // --------------------------------------------------------
+
+            return ResponseEntity.ok(barbearia);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Barbearia não encontrada.");
         }

@@ -24,6 +24,8 @@ public class Barbearia {
 
     private String chavePix;
 
+    private Boolean ativo = true;
+
     @Column(columnDefinition = "TEXT")
     private String endereco;
 
@@ -48,4 +50,8 @@ public class Barbearia {
     public String getSenha() {
         return this.senha;
     }
+
+    public Boolean getAtivo() { return ativo; }
+
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }
