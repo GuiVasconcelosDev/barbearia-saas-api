@@ -38,6 +38,17 @@ public class Agendamento {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    private Boolean concluido = false;
+
+    public Boolean getConcluido() {
+        return concluido;
+    }
+
+    public void setConcluido(Boolean concluido) {
+        this.concluido = concluido;
+    }
+
+
     // Datas e Horas (O Java usa o LocalDateTime para lidar com isso perfeitamente)
     @Column(name = "data_hora_inicio", nullable = false)
     private LocalDateTime dataHoraInicio;
