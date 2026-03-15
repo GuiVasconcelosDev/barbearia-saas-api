@@ -82,4 +82,30 @@ public class BarbeariaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Barbearia não encontrada.");
         }
     }
+
+    // Rota secreta do dono para BLOQUEAR uma barbearia
+    @PostMapping("/{id}/bloquear")
+    public ResponseEntity<?> bloquearBarbearia(@PathVariable Long id) {
+        Optional<Barbearia> b = repository.findById(id);
+        if (b.isPresent()) {
+            Barbearia barbearia = b.get();
+            barbearia.setAtivo(false); // Corta o acesso!
+            repository.save(barbearia);
+            return ResponseEntity.ok("✂️ Barbearia " + barbearia.getNome() + " bloqueada com sucesso!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Barbearia não encontrada.");
+    }
+
+    // Rota secreta do dono para DESBLOQUEAR
+    @PostMapping("/{id}/desbloquear")
+    public ResponseEntity<?> desbloquearBarbearia(@PathVariable Long id) {
+        Optional<Barbearia> b = repository.findById(id);
+        if (b.isPresent()) {
+            Barbearia barbearia = b.get();
+            barbearia.setAtivo(true); // Devolve o acesso!
+            repository.save(barbearia);
+            return ResponseEntity.ok("✅ Barbearia " + barbearia.getNome() + " liberada!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Barbearia não encontrada.");
+    }
 }
