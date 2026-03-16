@@ -34,11 +34,19 @@ public class BarbeariaController {
         return service.listarTodas();
     }
 
-    @PostMapping
-    public Barbearia adicionar(@RequestBody Barbearia barbearia) {
-        // Garante que toda nova barbearia já entra com o sistema liberado!
+   @PostMapping
+    public ResponseEntity<?> adicionar(@RequestBody Barbearia barbearia) {
+        if (repository.findByEmail(barbearia.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Este e-mail já está cadastrado.");
+        }
+        
+        if (repository.findBySlug(barbearia.getSlug()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: Este link já está em uso. Escolha outro nome.");
+        }
+
         barbearia.setAtivo(true); 
-        return service.criar(barbearia);
+        Barbearia novaBarbearia = service.criar(barbearia);
+        return ResponseEntity.ok(novaBarbearia);
     }
     
     @PostMapping("/login")

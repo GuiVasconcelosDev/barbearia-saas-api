@@ -12,4 +12,6 @@ public interface BarbeariaRepository extends JpaRepository<Barbearia, Long> {
 
     Optional<Barbearia> findByEmailAndSenha(String email, String senha);
     Optional<Barbearia> findBySlug(String slug);
+
+    Optional<Barbearia> findByEmail(String email);
 }
