@@ -56,4 +56,16 @@ public class AgendamentoController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/{id}/faltou")
+    public ResponseEntity<?> marcarFalta(@PathVariable Long id) {
+        Optional<Agendamento> ag = repository.findById(id);
+        if (ag.isPresent()) {
+            Agendamento agendamento = ag.get();
+            agendamento.setFaltou(true); // Marca que o cliente deu o cano!
+            repository.save(agendamento);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

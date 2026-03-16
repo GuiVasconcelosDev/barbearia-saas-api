@@ -40,6 +40,16 @@ public class Agendamento {
 
     private Boolean concluido = false;
 
+    private Boolean faltou = false;
+
+    public Boolean getFaltou() {
+        return faltou;
+    }
+
+    public void setFaltou(Boolean faltou) {
+        this.faltou = faltou;
+    }
+
     public Boolean getConcluido() {
         return concluido;
     }
