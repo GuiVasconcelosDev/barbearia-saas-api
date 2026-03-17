@@ -25,7 +25,7 @@ public class LembreteScheduler {
     private final String URL_ROBO = "https://barbearia-bot-whatsapp-production.up.railway.app/api/enviar";
 
     // Roda automaticamente a cada 15 minutos (900000 milissegundos)
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 900000)
     public void buscarAgendamentosParaLembrar() {
         LocalDateTime agora = LocalDateTime.now();
         LocalDateTime daquiA2Horas = agora.plusHours(2);
