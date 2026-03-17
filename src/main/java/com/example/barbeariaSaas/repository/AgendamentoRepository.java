@@ -28,4 +28,10 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("inicio") LocalDateTime inicio, 
             @Param("fim") LocalDateTime fim
     );
+
+    // O Radar do Robô do WhatsApp
+    List<Agendamento> findByDataHoraInicioBetweenAndLembreteEnviadoFalseAndConcluidoFalseAndFaltouFalse(
+            LocalDateTime inicio, 
+            LocalDateTime fim
+    );
 }

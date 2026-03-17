@@ -58,6 +58,16 @@ public class Agendamento {
         this.concluido = concluido;
     }
 
+    private Boolean lembreteEnviado = false;
+
+    public Boolean getLembreteEnviado() {
+        return lembreteEnviado;
+    }
+
+    public void setLembreteEnviado(Boolean lembreteEnviado) {
+        this.lembreteEnviado = lembreteEnviado;
+    }
+
 
     // Datas e Horas (O Java usa o LocalDateTime para lidar com isso perfeitamente)
     @Column(name = "data_hora_inicio", nullable = false)
