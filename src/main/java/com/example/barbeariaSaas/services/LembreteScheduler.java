@@ -22,7 +22,7 @@ public class LembreteScheduler {
     private AgendamentoRepository repository;
 
     // URL do seu robô Node.js
-    private final String URL_ROBO = "http://localhost:3001/api/enviar";
+    private final String URL_ROBO = "barbearia-bot-whatsapp-production.up.railway.app/api/enviar";
 
     // Roda automaticamente a cada 15 minutos (900000 milissegundos)
     @Scheduled(fixedRate = 900000)
