@@ -1,6 +1,8 @@
 package com.example.barbeariaSaas.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +22,15 @@ import org.mindrot.jbcrypt.BCrypt;
 import com.example.barbeariaSaas.models.Barbearia;
 import com.example.barbeariaSaas.repository.BarbeariaRepository;
 import com.example.barbeariaSaas.services.BarbeariaService;
+import com.example.barbeariaSaas.services.TokenService;
 
 @RestController
 @RequestMapping("/api/barbearias")
 @CrossOrigin(origins = "*")
 public class BarbeariaController {
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private BarbeariaService service;
@@ -70,7 +76,15 @@ public class BarbeariaController {
                 }
                 // -----------------------------------------------
 
-                return ResponseEntity.ok(barbearia); // Login com sucesso
+                // 3. A MÁGICA: Gera o Token JWT (O Crachá)
+                String token = tokenService.gerarToken(barbearia);
+
+                // 4. Prepara a resposta enviando os dados da barbearia E o token juntos
+                Map<String, Object> resposta = new HashMap<>();
+                resposta.put("barbearia", barbearia);
+                resposta.put("token", token);
+
+                return ResponseEntity.ok(resposta); // Login com sucesso + Crachá entregue!
             } else {
                 // Senha errada
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha inválidos.");
