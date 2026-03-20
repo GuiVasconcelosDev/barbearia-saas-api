@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// Importação da ferramenta de Criptografia
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.example.barbeariaSaas.models.Barbearia;
 import com.example.barbeariaSaas.repository.BarbeariaRepository;
 import com.example.barbeariaSaas.services.BarbeariaService;
@@ -51,23 +54,29 @@ public class BarbeariaController {
     
     @PostMapping("/login")
     public ResponseEntity<?> fazerLogin(@RequestBody Barbearia dadosLogin) {
-        Optional<Barbearia> barbeariaEncontrada = repository.findByEmailAndSenha(
-                dadosLogin.getEmail(), 
-                dadosLogin.getSenha()
-        );
+        // 1. Agora o banco procura APENAS pelo e-mail
+        Optional<Barbearia> barbeariaOpt = repository.findByEmail(dadosLogin.getEmail());
 
-        if (barbeariaEncontrada.isPresent()) {
-            Barbearia barbearia = barbeariaEncontrada.get();
+        if (barbeariaOpt.isPresent()) {
+            Barbearia barbearia = barbeariaOpt.get();
             
-            // --- TRAVA DE SEGURANÇA 1: BLOQUEIA O PAINEL ---
-            if (barbearia.getAtivo() != null && !barbearia.getAtivo()) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Assinatura inativa. Entre em contato com o suporte.");
-            }
-            // -----------------------------------------------
+            // 2. O BCrypt verifica se a senha digitada bate com o Hash do banco
+            boolean senhaCorreta = BCrypt.checkpw(dadosLogin.getSenha(), barbearia.getSenha());
+            
+            if (senhaCorreta) {
+                // --- TRAVA DE SEGURANÇA 1: BLOQUEIA O PAINEL ---
+                if (barbearia.getAtivo() != null && !barbearia.getAtivo()) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Assinatura inativa. Entre em contato com o suporte.");
+                }
+                // -----------------------------------------------
 
-            return ResponseEntity.ok(barbearia); // Login com sucesso
+                return ResponseEntity.ok(barbearia); // Login com sucesso
+            } else {
+                // Senha errada
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha inválidos.");
+            }
         } else {
-            // E-mail ou senha errados
+            // E-mail não encontrado
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha inválidos.");
         }
     }
