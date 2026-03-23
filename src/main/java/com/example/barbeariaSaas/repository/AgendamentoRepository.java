@@ -34,4 +34,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             LocalDateTime inicio, 
             LocalDateTime fim
     );
+
+    List<Agendamento> findByBarbeariaIdAndDataHoraInicioBetweenConluidoFalseAndFaltouFalse(Long id,
+            LocalDateTime inicioDoDia, LocalDateTime fimDoDia);
 }

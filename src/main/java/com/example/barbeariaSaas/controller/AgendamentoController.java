@@ -1,7 +1,13 @@
 package com.example.barbeariaSaas.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,5 +73,30 @@ public class AgendamentoController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/barbearia/{id}/livres")
+    public ResponseEntity<List<String>> buscarHorariosLivresHoje(@PathVariable Long id) {
+
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicioDoDia = hoje.atStartOfDay();
+        LocalDateTime fimDoDia = hoje.atTime(LocalTime.MAX);
+
+        List<Agendamento> ocupados = repository.findByBarbeariaIdAndDataHoraInicioBetweenConluidoFalseAndFaltouFalse(id, inicioDoDia, fimDoDia);
+
+        List<String> todosHorarios = Arrays.asList(
+            "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
+        );
+
+        List<String> horasOcupadas = ocupados.stream()
+            .map(ag -> ag.getDataHoraInicio().format(DateTimeFormatter.ofPattern("HH:mm")))
+            .collect(Collectors.toList());
+
+        List<String> horariosLivres = todosHorarios.stream()
+                .filter(horario -> !horasOcupadas.contains(horario))
+                .collect(Collectors.toList());
+
+        // Devolve a lista limpa para o Gemini ler! (Ex: ["09:00", "10:00"])
+        return ResponseEntity.ok(horariosLivres);
     }
 }
