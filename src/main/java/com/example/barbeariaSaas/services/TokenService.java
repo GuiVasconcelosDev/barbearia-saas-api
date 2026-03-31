@@ -1,5 +1,7 @@
 package com.example.barbeariaSaas.services;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -14,11 +16,8 @@ import com.example.barbeariaSaas.models.Barbearia;
 
 @Service
 public class TokenService {
-
-    // A assinatura oficial da sua empresa. NUNCA perca isto!
-    private final String CHAVE_SECRETA = "eu-era-feliz-antes-de-2006";
-
-    // 1. FABRICA O CRACHÁ (Quando o utilizador faz login)
+    @Value("${minha.chave.jwt}")
+    private String CHAVE_SECRETA;
     public String gerarToken(Barbearia barbearia) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(CHAVE_SECRETA);

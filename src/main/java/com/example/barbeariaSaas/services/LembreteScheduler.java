@@ -8,10 +8,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-// --- NOVAS IMPORTAÇÕES PARA O CABEÇALHO ---
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +27,8 @@ public class LembreteScheduler {
     @Autowired
     private AgendamentoRepository repository;
 
-    // URL do seu robô Node.js
+    @Value("${minha.chave.bot}")
+    private String chaveDoBot;
     private final String URL_ROBO = "https://barbearia-bot-whatsapp-production.up.railway.app/api/enviar";
 
     // Roda automaticamente a cada 15 minutos (900000 milissegundos)
@@ -59,21 +62,17 @@ public class LembreteScheduler {
                     body.put("telefone", telefonePuro);
                     body.put("mensagem", mensagem);
 
-                    // --- INÍCIO DA TRAVA DE SEGURANÇA ---
-                    // 4.1 Cria o "Crachá" com a Senha Secreta
                     HttpHeaders headers = new HttpHeaders();
                     headers.setContentType(MediaType.APPLICATION_JSON);
-                    headers.set("x-api-key", "eu-era-feliz-antes-de-2006"); 
+                    headers.set("x-api-key", chaveDoBot); 
 
                     // 4.2 Junta a mensagem com o crachá no mesmo envelope
                     HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-                    // --- FIM DA TRAVA DE SEGURANÇA ---
+                    
 
-                    // 5. ATIRA! (Envia o envelope completo)
                     restTemplate.postForEntity(URL_ROBO, request, String.class);
                     System.out.println("✅ Ordem enviada com sucesso para o robô atirar em: " + telefonePuro);
 
-                    // 6. Trava para não mandar de novo daqui a 15 minutos
                     ag.setLembreteEnviado(true);
                     repository.save(ag);
 
